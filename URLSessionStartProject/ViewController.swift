@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CryptoKit
 
 class ViewController: UIViewController {
 
@@ -31,36 +32,33 @@ class ViewController: UIViewController {
                 print(error)
             }
         }
-        
         endpointClient.executeRequest(endpoint, completion: completion)
     }
-
-
 }
 
 final class GetNameEndpoint: ObjectResponseEndpoint<String> {
     
     override var method: RESTClient.RequestType { return .get }
-    override var path: String { "/v1/cards" }
-//    override var queryItems: [URLQueryItem(name: "id", value: "1")]?
+    override var path: String { "/v1/public/characters" }
+    let timeStamp = NSDate().timeIntervalSince1970
+    let publicApiKey = "0974ca1c2fd4f246e6c0f6a8816c072a"
+    let privateApiKey = "4fbd8a1701e52eba2fa8205ff864818148047132"
+    var obligatoryItems: [URLQueryItem] {
+        return [URLQueryItem(name: "ts", value: "\(timeStamp)"),
+        URLQueryItem(name: "apikey", value: "\(publicApiKey)"),
+        URLQueryItem(name: "hash", value: "\(md5Hash(String(timeStamp) + privateApiKey + publicApiKey))")]
+    }
     
     override init() {
         super.init()
-
-        queryItems = [URLQueryItem(name: "name", value: "Black Lotus")]
+        queryItems = [URLQueryItem(name: "name", value: "Groot")] + obligatoryItems
     }
     
+    private func md5Hash(_ source: String) -> String {
+        return Insecure.MD5.hash(data: source.data(using: .utf8)!).map { String(format: "%02hhx", $0) }.joined()
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
 
 func decodeJSONOld() {
     let str = """
