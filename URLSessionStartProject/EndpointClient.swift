@@ -17,7 +17,6 @@ public enum PureResult<E> {
     case failure(E)
 }
 
-
 public final class EndpointClient {
 
     // MARK: - Types
